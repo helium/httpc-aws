@@ -20,6 +20,9 @@
 -define(ALGORITHM, "AWS4-HMAC-SHA256").
 -define(ISOFORMAT_BASIC, "~4.10.0b~2.10.0b~2.10.0bT~2.10.0b~2.10.0b~2.10.0bZ").
 
+service("iot") -> "execute-api";
+service(Service) -> Service.
+
 -spec headers(request()) -> headers().
 %% @doc Create the signed request headers
 %% end
@@ -43,7 +46,7 @@ headers(Request) ->
                             Request#request.secret_access_key,
                             RequestTimestamp,
                             Request#request.region,
-                            Request#request.service,
+                            service(Request#request.service),
                             Headers,
                             RequestHash),
   sort_headers(lists:merge([{"authorization", AuthValue}], Headers)).

@@ -22,6 +22,7 @@ decode(Value) ->
 %% @doc Convert the binary key/value pairs returned by JSX to strings.
 %% @end
 convert_binary_values([], Value) ->  Value;
+convert_binary_values({}, Accum) -> Accum;
 convert_binary_values([{K, V}|T], Accum) when is_list(V) ->
   convert_binary_values(T, lists:append(Accum, [{binary_to_list(K), convert_binary_values(V, [])}]));
 convert_binary_values([{K, V}|T], Accum) when is_binary(V) ->
