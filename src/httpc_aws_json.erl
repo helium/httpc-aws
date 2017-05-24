@@ -12,6 +12,8 @@
 -spec decode(Value :: string() | binary()) -> list().
 %% @doc Decode a JSON string returning a proplist
 %% @end
+decode("") ->
+  [];
 decode(Value) when is_list(Value) ->
   convert_binary_values(jsx:decode(list_to_binary(Value)), []);
 decode(Value) ->

@@ -13,6 +13,7 @@
          get/2,
          get/3,
          post/4,
+         put/4,
          refresh_credentials/0,
          request/5, request/6, request/7,
          set_credentials/2,
@@ -82,6 +83,16 @@ get(Service, Path, Headers) ->
 post(Service, Path, Body, Headers) ->
   request(Service, post, Path, Body, Headers).
 
+-spec put(Service :: string(),
+           Path :: path(),
+           Body :: body(),
+           Headers :: headers()) -> result().
+%% @doc Perform a HTTP Put request to the AWS API for the specified service. The
+%%      response will automatically be decoded if it is either in JSON or XML
+%%      format.
+%% @end
+put(Service, Path, Body, Headers) ->
+  request(Service, put, Path, Body, Headers).
 
 -spec refresh_credentials() -> ok | error.
 %% @doc Manually refresh the credentials from the environment, filesystem or EC2
@@ -450,7 +461,7 @@ perform_request_with_creds(State, Service, Method, Headers, Path, Body, Options,
 %% @doc Once it is validated that there are credentials to try and that they have not
 %%      expired, perform the request and return the response.
 %% @end
-perform_request_with_creds(State, Method, URI, Headers, undefined, "", Options) ->
+perform_request_with_creds(State, Method, URI, Headers, undefined, "", Options) when Method /= put, Method /= post ->
   Response = httpc:request(Method, {URI, Headers}, Options, []),
   {format_response(Response), State};
 perform_request_with_creds(State, Method, URI, Headers, ContentType, Body, Options) ->
