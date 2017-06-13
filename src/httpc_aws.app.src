@@ -12,8 +12,7 @@
     {env, []},
     {modules, [httpc_aws, httpc_aws_app, httpc_aws_config, httpc_aws_sign, httpc_aws_sup, httpcs_aws_urilib]},
     {maintainers, ["Gavin M. Roy"]},
-    {registered, [httpc_aws]},
-    {mod, {httpc_aws_app, []}},
+    {registered, []},
     {licenses, ["BSD"]},
     {links, [{"Github", "https://github.com/gmr/httpc-aws"}]}
   ]}.

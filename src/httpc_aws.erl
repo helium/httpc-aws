@@ -9,15 +9,12 @@
 -behavior(gen_server).
 
 %% API exports
--export([delete/3,
-         get/2,
-         get/3,
-         post/4,
-         put/4,
-         refresh_credentials/0,
-         request/5, request/6, request/7,
-         set_credentials/2,
-         set_region/1]).
+-export([delete/4,
+         get/3, get/4,
+         post/5, put/5,
+         request/6, request/7, request/8,
+         set_credentials/3,
+         set_region/2]).
 
 %% gen-server exports
 -export([start_link/0,
@@ -41,68 +38,66 @@
 %% exported wrapper functions
 %%====================================================================
 
--spec delete(Service :: string(),
+-spec delete(Pid :: pid(),
+             Service :: string(),
              Path :: file:filename_all(),
              Headers :: headers()) -> result().
 %% @doc Perform a HTTP DELETE request to the AWS API for the specified service. The
 %%      response will automatically be decoded if it is either in JSON or XML
 %%      format.
 %% @end
-delete(Service, Path, Headers) ->
-  request(Service, delete, Path, "", Headers).
+delete(Pid, Service, Path, Headers) ->
+  request(Pid, Service, delete, Path, "", Headers).
 
--spec get(Service :: string(),
-          Path :: file:filename_all()) -> result().
+-spec get(Pid :: pid(),
+          Service :: string(),
+          Path :: path()) -> result().
 %% @doc Perform a HTTP GET request to the AWS API for the specified service. The
 %%      response will automatically be decoded if it is either in JSON or XML
 %%      format.
 %% @end
-get(Service, Path) ->
-  get(Service, Path, []).
+get(Pid, Service, Path) ->
+  get(Pid, Service, Path, []).
 
 
--spec get(Service :: string(),
-          Path :: file:filename_all(),
+-spec get(Pid :: pid(),
+          Service :: string(),
+          Path :: path(),
           Headers :: headers()) -> result().
 %% @doc Perform a HTTP GET request to the AWS API for the specified service. The
 %%      response will automatically be decoded if it is either in JSON or XML
 %%      format.
 %% @end
-get(Service, Path, Headers) ->
-  request(Service, get, Path, "", Headers).
+get(Pid, Service, Path, Headers) ->
+  request(Pid, Service, get, Path, "", Headers).
 
 
--spec post(Service :: string(),
-           Path :: file:filename_all(),
+-spec post(Pid :: pid(),
+           Service :: string(),
+           Path :: path(),
            Body :: body(),
            Headers :: headers()) -> result().
 %% @doc Perform a HTTP Post request to the AWS API for the specified service. The
 %%      response will automatically be decoded if it is either in JSON or XML
 %%      format.
 %% @end
-post(Service, Path, Body, Headers) ->
-  request(Service, post, Path, Body, Headers).
+post(Pid, Service, Path, Body, Headers) ->
+  request(Pid, Service, post, Path, Body, Headers).
 
--spec put(Service :: string(),
-           Path :: path(),
-           Body :: body(),
-           Headers :: headers()) -> result().
+-spec put(Pid :: pid(),
+          Service :: string(),
+          Path :: path(),
+          Body :: body(),
+          Headers :: headers()) -> result().
 %% @doc Perform a HTTP Put request to the AWS API for the specified service. The
 %%      response will automatically be decoded if it is either in JSON or XML
 %%      format.
 %% @end
-put(Service, Path, Body, Headers) ->
-  request(Service, put, Path, Body, Headers).
+put(Pid, Service, Path, Body, Headers) ->
+  request(Pid, Service, put, Path, Body, Headers).
 
--spec refresh_credentials() -> ok | error.
-%% @doc Manually refresh the credentials from the environment, filesystem or EC2
-%%      Instance metadata service.
-%% @end
-refresh_credentials() ->
-  wpool:call(httpc_aws, refresh_credentials).
-
-
--spec request(Service :: string(),
+-spec request(Pid :: pid(),
+              Service :: string(),
               Method :: method(),
               Path :: file:filename_all(),
               Body :: body(),
@@ -111,11 +106,12 @@ refresh_credentials() ->
 %%      response will automatically be decoded if it is either in JSON or XML
 %%      format.
 %% @end
-request(Service, Method, Path, Body, Headers) ->
-  wpool:call(httpc_aws, {request, Service, Method, Headers, Path, Body, [], undefined}, available_worker, ?REQUEST_TIMEOUT).
+request(Pid, Service, Method, Path, Body, Headers) ->
+  gen_server:call(Pid, {request, Service, Method, Headers, Path, Body, [], undefined}).
 
 
--spec request(Service :: string(),
+-spec request(Pid :: pid(),
+              Service :: string(),
               Method :: method(),
               Path :: file:filename_all(),
               Body :: body(),
@@ -125,11 +121,12 @@ request(Service, Method, Path, Body, Headers) ->
 %%      response will automatically be decoded if it is either in JSON or XML
 %%      format.
 %% @end
-request(Service, Method, Path, Body, Headers, HTTPOptions) ->
-  wpool:call(httpc_aws, {request, Service, Method, Headers, Path, Body, HTTPOptions, undefined}, available_worker, ?REQUEST_TIMEOUT).
+request(Pid, Service, Method, Path, Body, Headers, HTTPOptions) ->
+  gen_server:call(Pid, {request, Service, Method, Headers, Path, Body, HTTPOptions, undefined}).
 
 
--spec request(Service :: string(),
+-spec request(Pid :: pid(),
+              Service :: string(),
               Method :: method(),
               Path :: file:filename_all(),
               Body :: body(),
@@ -141,25 +138,25 @@ request(Service, Method, Path, Body, Headers, HTTPOptions) ->
 %%      of services such as DynamoDB. The response will automatically be decoded
 %%      if it is either in JSON or XML format.
 %% @end
-request(Service, Method, Path, Body, Headers, HTTPOptions, Endpoint) ->
-  wpool:call(httpc_aws, {request, Service, Method, Headers, Path, Body, HTTPOptions, Endpoint}, available_worker, ?REQUEST_TIMEOUT).
+request(Pid, Service, Method, Path, Body, Headers, HTTPOptions, Endpoint) ->
+  gen_server:call(Pid, {request, Service, Method, Headers, Path, Body, HTTPOptions, Endpoint}).
 
 
--spec set_credentials(access_key(), secret_access_key()) -> ok.
+-spec set_credentials(pid(), access_key(), secret_access_key()) -> ok.
 %% @doc Manually set the access credentials for requests. This should
 %%      be used in cases where the client application wants to control
 %%      the credentials instead of automatically discovering them from
 %%      configuration or the AWS Instance Metadata service.
 %% @end
-set_credentials(AccessKey, SecretAccessKey) ->
-  wpool:call(httpc_aws, {set_credentials, AccessKey, SecretAccessKey}, available_worker).
+set_credentials(Pid, AccessKey, SecretAccessKey) ->
+  gen_server:call(Pid, {set_credentials, AccessKey, SecretAccessKey}).
 
 
--spec set_region(Region :: string()) -> ok.
+-spec set_region(Pid :: pid(), Region :: string()) -> ok.
 %% @doc Manually set the AWS region to perform API requests to.
 %% @end
-set_region(Region) ->
-  wpool:call(httpc_aws, {set_region, Region}, available_worker).
+set_region(Pid, Region) ->
+  gen_server:call(Pid, {set_region, Region}).
 
 
 %%====================================================================
@@ -167,7 +164,8 @@ set_region(Region) ->
 %%====================================================================
 
 start_link() ->
-  wpool:start_pool(?MODULE, [{worker, {?MODULE, []}}]).
+  gen_server:start_link(?MODULE, [], []).
+
 
 -spec init(list()) -> {ok, state()}.
 init([]) ->
