@@ -60,7 +60,7 @@
                       undefined | tcp_port()}.
 -record(uri, {scheme :: undefined | scheme(),
               authority :: authority(),
-              path :: undefined | path(),
+              path :: undefined | file:filename_all(),
               query :: undefined | query_args(),
               fragment :: undefined | fragment()}).
 
@@ -74,7 +74,7 @@
 -type headers() :: [{Field :: field(), Value :: value()}].
 -type body() :: string() | binary().
 
--type ssl_options() :: [ssl_option()].
+-type ssl_options() :: [ssl:ssl_option()].
 
 -type http_option() :: {timeout, timeout()} |
                        {connect_timeout, timeout()} |

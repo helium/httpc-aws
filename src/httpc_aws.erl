@@ -41,7 +41,7 @@
 %%====================================================================
 
 -spec delete(Service :: string(),
-             Path :: path(),
+             Path :: file:filename_all(),
              Headers :: headers()) -> result().
 %% @doc Perform a HTTP DELETE request to the AWS API for the specified service. The
 %%      response will automatically be decoded if it is either in JSON or XML
@@ -51,7 +51,7 @@ delete(Service, Path, Headers) ->
   request(Service, delete, Path, "", Headers).
 
 -spec get(Service :: string(),
-          Path :: path()) -> result().
+          Path :: file:filename_all()) -> result().
 %% @doc Perform a HTTP GET request to the AWS API for the specified service. The
 %%      response will automatically be decoded if it is either in JSON or XML
 %%      format.
@@ -61,7 +61,7 @@ get(Service, Path) ->
 
 
 -spec get(Service :: string(),
-          Path :: path(),
+          Path :: file:filename_all(),
           Headers :: headers()) -> result().
 %% @doc Perform a HTTP GET request to the AWS API for the specified service. The
 %%      response will automatically be decoded if it is either in JSON or XML
@@ -72,7 +72,7 @@ get(Service, Path, Headers) ->
 
 
 -spec post(Service :: string(),
-           Path :: path(),
+           Path :: file:filename_all(),
            Body :: body(),
            Headers :: headers()) -> result().
 %% @doc Perform a HTTP Post request to the AWS API for the specified service. The
@@ -93,7 +93,7 @@ refresh_credentials() ->
 
 -spec request(Service :: string(),
               Method :: method(),
-              Path :: path(),
+              Path :: file:filename_all(),
               Body :: body(),
               Headers :: headers()) -> result().
 %% @doc Perform a HTTP request to the AWS API for the specified service. The
@@ -106,7 +106,7 @@ request(Service, Method, Path, Body, Headers) ->
 
 -spec request(Service :: string(),
               Method :: method(),
-              Path :: path(),
+              Path :: file:filename_all(),
               Body :: body(),
               Headers :: headers(),
               HTTPOptions :: http_options()) -> result().
@@ -120,7 +120,7 @@ request(Service, Method, Path, Body, Headers, HTTPOptions) ->
 
 -spec request(Service :: string(),
               Method :: method(),
-              Path :: path(),
+              Path :: file:filename_all(),
               Body :: body(),
               Headers :: headers(),
               HTTPOptions :: http_options(),
@@ -348,7 +348,7 @@ parse_content_type(ContentType) ->
                       Service :: string(),
                       Method :: method(),
                       Headers :: headers(),
-                      Path :: path(),
+                      Path :: file:filename_all(),
                       Body :: body(),
                       Options :: http_options(),
                       Host :: host())
@@ -365,7 +365,7 @@ perform_request(State, Service, Method, Headers, Path, Body, Options, Host) ->
                                 Service :: string(),
                                 Method :: method(),
                                 Headers :: headers(),
-                                Path :: path(),
+                                Path :: file:filename_all(),
                                 Body :: body(),
                                 Options :: http_options(),
                                 Host :: host())
@@ -386,7 +386,7 @@ perform_request_has_creds(false, State, _, _, _, _, _, _, _) ->
                                     Service :: string(),
                                     Method :: method(),
                                     Headers :: headers(),
-                                    Path :: path(),
+                                    Path :: file:filename_all(),
                                     Body :: body(),
                                     Options :: http_options(),
                                     Host :: host())
@@ -405,7 +405,7 @@ perform_request_creds_expired(true, State, Service, Method, Headers, Path, Body,
                                       Service :: string(),
                                       Method :: method(),
                                       Headers :: headers(),
-                                      Path :: path(),
+                                      Path :: file:filename_all(),
                                       Body :: body(),
                                       Options :: http_options(),
                                       Host :: host())
@@ -424,7 +424,7 @@ perform_request_creds_refreshed({error, State}, _, _, _, _, _, _, _) ->
                                  Service :: string(),
                                  Method :: method(),
                                  Headers :: headers(),
-                                 Path :: path(),
+                                 Path :: file:filename_all(),
                                  Body :: body(),
                                  Options :: http_options(),
                                  Host :: host())

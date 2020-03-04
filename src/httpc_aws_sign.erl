@@ -183,7 +183,7 @@ query_string(QueryArgs) ->
 
 
 -spec request_hash(Method :: method(),
-                   Path :: path(),
+                   Path :: file:filename_all(),
                    QArgs :: query_args(),
                    Headers :: headers(),
                    Payload :: string()) -> string().
