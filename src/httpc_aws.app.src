@@ -6,8 +6,7 @@
       stdlib,
       crypto,
       ssl,
-      inets,
-      worker_pool
+      inets
     ]},
     {env, []},
     {modules, [httpc_aws, httpc_aws_app, httpc_aws_config, httpc_aws_sign, httpc_aws_sup, httpcs_aws_urilib]},

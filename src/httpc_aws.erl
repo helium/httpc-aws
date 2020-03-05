@@ -51,7 +51,7 @@ delete(Pid, Service, Path, Headers) ->
 
 -spec get(Pid :: pid(),
           Service :: string(),
-          Path :: path()) -> result().
+          Path :: file:filename_all()) -> result().
 %% @doc Perform a HTTP GET request to the AWS API for the specified service. The
 %%      response will automatically be decoded if it is either in JSON or XML
 %%      format.
@@ -62,7 +62,7 @@ get(Pid, Service, Path) ->
 
 -spec get(Pid :: pid(),
           Service :: string(),
-          Path :: path(),
+          Path :: file:filename_all(),
           Headers :: headers()) -> result().
 %% @doc Perform a HTTP GET request to the AWS API for the specified service. The
 %%      response will automatically be decoded if it is either in JSON or XML
@@ -74,7 +74,7 @@ get(Pid, Service, Path, Headers) ->
 
 -spec post(Pid :: pid(),
            Service :: string(),
-           Path :: path(),
+           Path :: file:filename_all(),
            Body :: body(),
            Headers :: headers()) -> result().
 %% @doc Perform a HTTP Post request to the AWS API for the specified service. The
@@ -86,7 +86,7 @@ post(Pid, Service, Path, Body, Headers) ->
 
 -spec put(Pid :: pid(),
           Service :: string(),
-          Path :: path(),
+          Path :: file:filename_all(),
           Body :: body(),
           Headers :: headers()) -> result().
 %% @doc Perform a HTTP Put request to the AWS API for the specified service. The
@@ -183,10 +183,6 @@ handle_call({request, Service, Method, Headers, Path, Body, Options, Host}, _Fro
 
 handle_call(get_state, _, State) ->
   {reply, {ok, State}, State};
-
-handle_call(refresh_credentials, _, State) ->
-  {Reply, NewState} = load_credentials(State),
-  {reply, Reply, NewState};
 
 handle_call({set_credentials, AccessKey, SecretAccessKey}, _, State) ->
   {reply, ok, State#state{access_key = AccessKey,
